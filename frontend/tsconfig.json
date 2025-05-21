@@ -1,0 +1,21 @@
+{
+	"extends": "./.svelte-kit/tsconfig.json",
+	"compilerOptions": {
+		"types": ["svelte", "vite/client"],
+		"baseUrl": ".",
+		"allowJs": true,
+		"checkJs": true,
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"resolveJsonModule": true,
+		"skipLibCheck": true,
+		"sourceMap": true,
+		"strict": true,
+		"moduleResolution": "bundler",
+		"paths": {
+      "$lib/*": ["src/lib/*"]
+    	}
+	},
+	"include": ["src/**/*", "src/node_modules/**/*", "three-examples.d.ts"],
+  "exclude": ["node_modules/*", "public/*"]
+}
