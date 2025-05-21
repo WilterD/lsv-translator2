@@ -3,7 +3,7 @@ import queue
 from vosk import Model, KaldiRecognizer
 import numpy as np
 
-from .glosa_converter import texto_a_glosas
+from .glosa import texto_a_glosas
 from .state import add_glosa, append_transcript
 
 

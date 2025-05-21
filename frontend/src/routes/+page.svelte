@@ -1,49 +1,50 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { createAudioStream } from '$lib/audioStream';
   import { loadAvatar, enqueueAnimation } from '$lib/avatarControl';
+  import { io } from 'socket.io-client';
 
   let transcript: string[] = [];
   let canvas: HTMLCanvasElement;
-  let resumen = "";
-
-  let socket: WebSocket;
+  let socket: any;
 
   onMount(() => {
     loadAvatar(canvas, '/avatar.glb');
-    socket = new WebSocket('ws://localhost:5000/stream');
 
-    socket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      transcript.push(data.glosa);
-      enqueueAnimation(data.animacion);
-    };
+    socket = io("http://localhost:5000");
+
+    socket.on("connect", () => {
+      console.log("✅ Conectado a backend vía Socket.IO");
+    });
+
+    socket.on("glosa", (data: { glosa: string; animacion?: string }) => {
+      console.log("✋ Glosa detectada:", data.glosa);
+      transcript = [...transcript, data.glosa];
+      if (data.animacion) {
+        enqueueAnimation(data.animacion);
+      }
+    });
+
+    socket.on("estado", (data: { mensaje: string }) => {
+      console.log("ℹ️", data.mensaje);
+    });
+
+    socket.on("error", (e: { error: string }) => {
+      alert("❌ Error en el backend: " + e.error);
+    });
   });
 
-  function start() {
-    createAudioStream(socket);
+  function startRecognition() {
+    socket.emit("iniciar_reconocimiento");
   }
 
-  async function obtenerResumen() {
-    const res = await fetch('/resumen');
-    const json = await res.json();
-    resumen = json.resumen;
+  function playCasa() {
+    console.log("▶️ Reproduciendo animación: Casa");
+    enqueueAnimation("Casa");
   }
 </script>
 
-<h1>Traductor Voz → Glosa → Animación</h1>
-<button on:click={start}>🎙️ Iniciar reconocimiento</button>
-<button on:click={obtenerResumen}>🧠 Resumen</button>
-<p><strong>Glosas reconocidas:</strong> {transcript.join(' ')}</p>
-<p><strong>Resumen:</strong> {resumen}</p>
+<h1>🧠 Traductor Voz → Glosa → Animación</h1>
+<button on:click={startRecognition}>🎤 Iniciar reconocimiento</button>
+<button on:click={playCasa}>🕹️ Reproducir "Casa"</button>
+<p><strong>Glosas:</strong> {transcript.join(' ')}</p>
 <canvas bind:this={canvas}></canvas>
-
-<style>
-  canvas {
-    border: 1px solid #ccc;
-    margin-top: 1rem;
-    width: 100%;
-    max-width: 600px;
-    height: auto;
-  }
-</style>

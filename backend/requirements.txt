@@ -7,3 +7,4 @@ torch
 sentencepiece
 Flask-SocketIO
 eventlet
+sounddevice
