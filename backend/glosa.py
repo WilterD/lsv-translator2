@@ -6,7 +6,7 @@ GLOSA_MAP = {
     "la": "",
     "el": "",
     "una": "",
-    "casa": "CASA",
+    "casa": "Casa",
     "clases": "CLASES",
     "yo": "YO",
     "comiendo": "COMIENDO",
@@ -25,7 +25,7 @@ def glosas_a_animaciones(glosas: list[str]) -> list[str]:
         if glosa == "YO":
             animaciones.append("animacion_yo")
         elif glosa == "CASA":
-            animaciones.append("animacion_casa")
+            animaciones.append("Casa")
         elif glosa == "COMIENDO":
             animaciones.append("animacion_comiendo")
         elif glosa == "HOLA":
