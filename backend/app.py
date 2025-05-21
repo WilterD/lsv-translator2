@@ -1,4 +1,4 @@
-# backend/app.py
+import time
 from flask import Flask
 from flask_socketio import SocketIO, emit
 from vosk import Model, KaldiRecognizer
@@ -26,7 +26,8 @@ ANIMACIONES_MAP = {           # glosa → nombre de animación en el GLB
 
 # ---------- Flask‑Socket.IO ----------------------------------------------------
 app = Flask(__name__)
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode="threading")
+
 
 # ---------- Vosk --------------------------------------------------------------
 if not os.path.isdir(MODEL_PATH):
@@ -45,7 +46,7 @@ def a_texto_glosa(texto: str) -> list[str]:
     palabras = re.findall(r"\w+", texto.lower())
     return [GLOSA_MAP.get(p, p.upper()) for p in palabras if GLOSA_MAP.get(p)]
 
-def mic_callback(indata, frames, time, status):
+def mic_callback(indata, frames, time_, status):
     if status:
         print("⚠️  Mic status:", status)
     audio_q.put(bytes(indata))
@@ -67,7 +68,10 @@ def reconocer_en_hilo():
                 for glosa in a_texto_glosa(texto_final):
                     anim = ANIMACIONES_MAP.get(glosa)  # puede ser None
                     print(f"✋  Glosa: {glosa}  → anim: {anim}")
-                    socketio.emit("glosa", {"glosa": glosa, "animacion": anim})
+                    # Log antes de emitir
+                    print(f"[DEBUG] Emitting glosa via socket: glosa={glosa}, animacion={anim}")
+                    socketio.emit("glosa", {"glosa": glosa, "animacion": anim, "timestamp": time.time()})
+                    print(f"✅ Emitido: {glosa} | {anim or 'sin animación'}")
 
 # ---------- Eventos Socket.IO -------------------------------------------------
 @socketio.on("iniciar_reconocimiento")
