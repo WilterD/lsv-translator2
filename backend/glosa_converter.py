@@ -8,7 +8,12 @@ GLOSA_MAP = {
     "una": "",
     "casa": "CASA",
     "clases": "CLASES",
-    "yo": "YO"
+    "yo": "YO",
+    "comiendo": "COMIENDO",
+    "comer": "COMER",
+    "comida": "COMIDA",
+    "hola": "HOLA",
+    "mundo": "MUNDO",
 }
 
 def texto_a_glosas(texto: str) -> list[str]:

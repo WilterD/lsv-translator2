@@ -5,3 +5,5 @@ vosk
 transformers
 torch
 sentencepiece
+Flask-SocketIO
+eventlet
